@@ -1,58 +1,60 @@
-function ativarBotao(botao) {
-    // Verificar se o botão está ativado
-    var estaAtivo = botao.classList.contains("ativo");
-    
-    // Desativar todos os botões
-    var botoes = document.querySelectorAll(".botao");
-    for (var i = 0; i < botoes.length; i++) {
-    botoes[i].classList.remove("ativo");
+const botoes = document.querySelectorAll(".botao");
+const textos = document.querySelectorAll(".aba-conteudo");
+
+for (let i = 0; i < botoes.length; i++) {
+    botoes[i].onclick = function () {
+
+        for (let j = 0; j < botoes.length; j++) {
+            botoes[j].classList.remove("ativo");
+            textos[j].classList.remove("ativo");
+        }
+
+        botoes[i].classList.add("ativo");
+        textos[i].classList.add("ativo");
     }
-    
-    // Ativar o botão apenas se não estiver ativado
-    if (!estaAtivo) {
-    botao.classList.add("ativo");
+}
+
+const contadores = document.querySelectorAll(".contador");
+const tempoObjetivo1 = new Date("2020-10-05T00:00:00");
+const tempoObjetivo2 = new Date("2023-12-05T00:00:00");
+const tempoObjetivo3 = new Date("2023-12-30T00:00:00");
+const tempoObjetivo4 = new Date("2024-02-01T00:00:00");
+
+const tempos = [tempoObjetivo1,tempoObjetivo2,tempoObjetivo3,tempoObjetivo4];
+
+
+function calculaTempo(tempoObjetivo) {
+    let tempoAtual = new Date();
+    let tempoFinal = tempoObjetivo - tempoAtual;
+    let segundos = Math.floor(tempoFinal / 1000);
+    let minutos = Math.floor(segundos / 60);
+    let horas = Math.floor(minutos / 60);
+    let dias = Math.floor(horas / 24);
+
+    segundos %= 60;
+    minutos %= 60;
+    horas %= 24;
+    if (tempoFinal > 0){
+        return [dias,horas,minutos,segundos];
+    } else {
+        return [0,0,0,0];
     }
+}
+
+function atualizaCronometro(){
+    document.getElementById("dias0").textContent = calculaTempo(tempos[0])[0];
+    document.getElementById("horas0").textContent = calculaTempo(tempos[0])[1];
+    document.getElementById("min0").textContent = calculaTempo(tempos[0])[2];
+    document.getElementById("seg0").textContent = calculaTempo(tempos[0])[3];
+
+    for (let i=0; i<contadores.length;i++){
+       // contadores[i].textContent = calculaTempo(tempos[i]);   
     }
-    // Definir a data-alvo (sete dias a partir da data atual)
-    var dataAlvo = new Date();
-    dataAlvo.setDate(dataAlvo.getDate() + 7);
-    dataAlvo.setHours(23);
-    dataAlvo.setMinutes(59);
-    dataAlvo.setSeconds(59);
-    dataAlvo = dataAlvo.getTime();
-    
-    // Atualizar o contador a cada segundo
-    var intervalo = setInterval(function() {
-    // Obter a data e hora atuais
-    var agora = new Date().getTime();
-    
-    // Calcular a diferença entre a data-alvo e a data atual
-    var diferenca = dataAlvo - agora;
-    
-    // Calcular dias, horas, minutos e segundos restantes
-    var dias = Math.floor(diferenca / (1000 * 60 * 60 * 24));
-    var horas = Math.floor((diferenca % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    var minutos = Math.floor((diferenca % (1000 * 60 * 60)) / (1000 * 60));
-    var segundos = Math.floor((diferenca % (1000 * 60)) / 1000);
-    
-    // Exibir o contador na página
-    document.getElementById("dias").innerHTML = formatarTempo(dias);
-    document.getElementById("horas").innerHTML = formatarTempo(horas);
-    document.getElementById("minutos").innerHTML = formatarTempo(minutos);
-    document.getElementById("segundos").innerHTML = formatarTempo(segundos);
-    
-    // Se a contagem regressiva terminar, exibir uma mensagem
-    if (diferenca < 0) {
-    clearInterval(intervalo);
-    document.getElementById("timer").innerHTML = "EXPIRADO";
-    }
-    }, 1000); // Atualizar a cada segundo
-    
-    // Função para formatar o tempo (adicionar zero à esquerda, se necessário)
-    function formatarTempo(tempo) {
-    return tempo < 10 ? "0" + tempo : tempo;
-    }
-    // Função para formatar o tempo (remover zero à esquerda, se necessário)
-    function formatarTempo(tempo) {
-    return tempo < 10 ? tempo.toString() : tempo;
-    }
+}
+
+function comecaCronometro(){
+    atualizaCronometro();
+    setInterval(atualizaCronometro,1000);
+}
+
+comecaCronometro();
